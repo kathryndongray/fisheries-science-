@@ -154,5 +154,4 @@ plot(landings_data$Length_cm)
 landings_data
 
 #save clean data
->>>>>>> 17981b109026132846a9aa788bf62f4198a02e92
 write_csv(landings_data,"sample_landings_data_clean.csv")
