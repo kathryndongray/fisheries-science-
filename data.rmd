@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "data"
 output: github_document
@@ -75,4 +76,83 @@ plot(landings_data$Length_cm)
 landings_data
 
 #save clean data
+=======
+---
+title: "data"
+output: github_document
+---
+
+library('tidyverse')
+library('lubridate')
+
+landings_data <- read_csv("sample_landings_data_raw.csv")
+
+landings_data
+
+# Start with the landings_data data frame
+landings_data <- landings_data %>%
+  # Rename the columns
+  rename(Year = yy,
+         Date = dat,
+         Trip_ID = trip,
+         Effort_Hours = effort,
+         Gear = gr,
+         Species = sp,
+         Length_cm = l_cm,
+         Weight_g = w_cm) %>%
+  # Turn the date column into a date format that R recognizes
+  mutate(Date = mdy(Date)) 
+
+landings_data
+
+#check for missing values
+landings_data[!complete.cases(landings_data),]
+
+#remove rows with missing values
+landings_data <- na.omit(landings_data)
+
+landings_data
+
+#check for typos in the gear variable
+unique(landings_data$Gear)
+
+#trap appears twice - fix this
+landings_data <- landings_data %>%
+  mutate(Gear = tolower(Gear))
+
+unique(landings_data$Gear)
+
+#check for typos in species variable
+unique(landings_data$Species)
+
+#check how many times each spelling occurs
+landings_data %>%
+  filter(Species == "Caesoi cunning") %>%
+  nrow()
+  
+landings_data %>%
+  filter(Species == "Caesio cuning") %>%
+  nrow()
+  
+#caesio cuning is typo as it appears only twice, replace with correct spelling 
+landings_data <- landings_data %>%
+  mutate(Species = replace(Species,Species == "Caesoi cunning", "Caesio cuning"))
+
+unique(landings_data$Species)
+
+summary(landings_data$Length_cm)
+
+plot(landings_data$Length_cm)
+
+#remove data errors
+landings_data <- landings_data %>%
+  filter(Length_cm < 100)
+
+plot(landings_data$Length_cm)
+
+#examine data frame again
+landings_data
+
+#save clean data
+>>>>>>> 17981b109026132846a9aa788bf62f4198a02e92
 write_csv(landings_data,"sample_landings_data_clean.csv")
