@@ -108,8 +108,9 @@ write_csv(mean_median,"cpue_mean_median.csv")
 
 #comparison plot
 mm <- melt(mean_median, id="Year")
-ggplot(data=mm, aes(x= Year , y= value, colour = variable))+ geom_point() + xlim(2002, 2015)
+m<- ggplot(data=mm, aes(x= Year , y= value, colour = variable))+ geom_point() + xlim(2002, 2015)
 
+write_png(m, "mean_vs_median_cpue.png)
 
-
+jpeg(file="mean_vs_median_cpue.jpeg")
 
