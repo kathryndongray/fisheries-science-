@@ -1,0 +1,115 @@
+---
+title: "rmd test"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+```{r, eval=TRUE}
+library('readr')
+library('ggplot2')
+library('magrittr')
+library('tidyverse')
+library('lubridate')
+library('dplyr')
+
+```
+
+Import data
+```{r, eval= TRUE}
+landings_data <- read_csv("sample_landings_data_raw.csv")
+
+landings_data
+```
+
+Start with the landings_data data frame and rename columns. Also turn the date column into a date format that R recognises.
+```{r, eval= TRUE}
+landings_data <- landings_data %>%
+ rename( Year = yy,
+         Date = dat,
+         Trip_ID = trip,
+         Effort_Hours = effort,
+         Gear = gr,
+         Species = sp,
+         Length_cm = l_cm,
+         Weight_g = w_cm) %>%
+  mutate(Date = mdy(Date))
+```
+Print data.
+```{r}
+landings_data
+```
+Check for missing values
+```{r}
+landings_data[!complete.cases(landings_data),]
+```
+Remove rows with missing values
+```{r}
+landings_data <- na.omit(landings_data)
+```
+Print edited data set
+```{r}
+landings_data
+```
+
+Check for typos in the gear variable
+```{r}
+unique(landings_data$Gear)
+```
+Trap appears twice - fix this
+```{r}
+landings_data <- landings_data %>%
+  mutate(Gear = tolower(Gear))
+unique(landings_data$Gear)
+```
+Check for typos in species variable
+```{r}
+unique(landings_data$Species)
+```
+Check how many times each spelling occurs
+```{r}
+landings_data %>%
+  filter(Species == "Caesoi cunning") %>%
+  nrow()
+landings_data %>%
+  filter(Species == "Caesio cuning") %>%
+  nrow()
+```
+Caesio cuning is typo as it appears only twice, replace with correct spelling 
+```{r}
+landings_data <- landings_data %>%
+  mutate(Species = replace(Species,Species == "Caesoi cunning", "Caesio cuning"))
+
+unique(landings_data$Species)
+```
+
+Look at the distribution of length
+```{r}
+summary(landings_data$Length_cm)
+```
+The max value is much larger than the mean/median values. Make a plot to check for outliers.
+```{r}
+plot(landings_data$Length_cm)
+```
+
+We see there is an outlier. Remove this error and make a new plot.
+```{r}
+landings_data <- landings_data %>%
+  filter(Length_cm < 100)
+
+plot(landings_data$Length_cm)
+```
+
+Examine data frame again
+```{r}
+landings_data
+```
+
+Save clean data
+```{r}
+write_csv(landings_data,"sample_landings_data_clean.csv")
+```
+
