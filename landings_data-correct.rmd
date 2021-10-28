@@ -91,7 +91,7 @@ Look at the distribution of length
 summary(landings_data$Length_cm)
 ```
 The max value is much larger than the mean/median values. Make a plot to check for outliers.
-```{r}
+```{r, length plot}
 plot(landings_data$Length_cm)
 ```
 
@@ -99,7 +99,8 @@ We see there is an outlier. Remove this error and make a new plot.
 ```{r}
 landings_data <- landings_data %>%
   filter(Length_cm < 100)
-
+```
+```{r, corrected lenth plot}
 plot(landings_data$Length_cm)
 ```
 

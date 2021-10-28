@@ -182,18 +182,20 @@ check for outliers.
 plot(landings_data$Length_cm)
 ```
 
-![](landings_data-correct_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](landings_data-correct_files/figure-gfm/length%20plot-1.png)<!-- -->
 
 We see there is an outlier. Remove this error and make a new plot.
 
 ``` r
 landings_data <- landings_data %>%
   filter(Length_cm < 100)
+```
 
+``` r
 plot(landings_data$Length_cm)
 ```
 
-![](landings_data-correct_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](landings_data-correct_files/figure-gfm/corrected%20lenth%20plot-1.png)<!-- -->
 
 Examine data frame again
 
