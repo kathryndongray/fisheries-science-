@@ -1,0 +1,144 @@
+---
+title: "Basic Fisheries Stats"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+```{r, eval=TRUE}
+library('readr')
+library('ggplot2')
+library('magrittr')
+library('tidyverse')
+library('lubridate')
+library('dplyr')
+```
+
+CALCULATING ANNUAL LANDINGS
+
+Import data
+```{r, eval= TRUE}
+landings_data <- read_csv("sample_landings_data_clean.csv")
+
+landings_data
+```
+
+Start with the landings data frame.
+
+Add column for kilograms by dividing gram column by 1000. Group the data by year. Next, summarise the total annual landings per year
+
+```{r, eval=TRUE, messgae=FALSE}
+annual_landings <- landings_data %>% 
+  mutate(Weight_kg = Weight_g / 1000) %>%
+  group_by(Year) %>% 
+  summarize(Annual_Landings_kg = sum(Weight_kg,na.rm=TRUE))
+```
+
+Display a table of the annual landings data
+```{r}
+annual_landings
+```
+
+CALCULATING CATCH-PER-UNIT-EFFORT (CPUE) 
+
+Start with the landings data frame.
+
+Add column for kilograms by dividing gram column by 1000. Group the data by year and gear type. Next, summarise the total annual landings per year and gear type. 
+```{r, eval=TRUE}
+annual_gear_landings <- landings_data %>% 
+  mutate(Weight_kg = Weight_g / 1000) %>%
+  group_by(Year, Gear) %>% 
+  summarize(Annual_Landings_kg = sum(Weight_kg,na.rm=TRUE))
+```
+
+Display a table of the annual landings data by gear type
+```{r, eval=TRUE}
+annual_gear_landings
+```
+
+PERCENTAGE MATURE
+
+Define m95, the length at which 95% of fish are mature
+```{r}
+m95 = 15.9
+```
+
+Start with the landings data frame. 
+Add a column to the data that indicates whether each length measurement is from a mature or immature fish. If it is mature, this value should be TRUE; if immature, FALSE. 
+Group by year so we can see the percent mature for every year. The percentage mature is equal to the  number of mature fish divided by the total number of fish and multiplied by 100.
+```{r, eval=TRUE, message=FALSE}
+landings_data %>% 
+  mutate(Mature = Length_cm > m95) %>% 
+  group_by(Year) %>% 
+  summarize(Percent_Mature = sum(Mature) / n() * 100) 
+```
+
+MEDIAN CPUE
+
+Start with the landings data frame.
+
+Add column for kilograms by dividing gram column by 1000.
+
+Group by year and Trip ID so that you can calculate CPUE for every trip in every year. 
+
+For each year and trip ID, calculate the CPUE for each trip by dividing the sum of the catch, converted from grams to kilograms, by the trip by the number of fishing hours. 
+
+Next, just group by year so we can calculate median CPUE for each year across all trips in the year.
+
+Calculate median CPUE for each year.
+
+```{r, eval=TRUE, message=FALSE}
+cpue_median <- landings_data %>% 
+  mutate(Weight_kg = Weight_g / 1000) %>%
+  group_by(Year,Trip_ID) %>% 
+  summarize(Trip_CPUE = sum(Weight_kg) / mean(Effort_Hours)) %>% 
+summarize(Median_CPUE_kg_hour = median(Trip_CPUE))
+```
+
+Display a table of the median CPUE data
+```{r, eval=TRUE}
+cpue_median
+```
+
+Plot median CPUE
+```{r, median_CPUE, eval=TRUE}
+ggplot(cpue_median,  aes(x=Year, y= Median_CPUE_kg_hour)) + geom_line() + ylab("Median CPUE")
+```
+
+MEAN CPUE
+
+Calculate mean CPUE for each year.
+
+```{r, eval=TRUE, message=FALSE}
+cpue_mean <- landings_data %>% 
+  mutate(Weight_kg = Weight_g / 1000) %>%
+  group_by(Year,Trip_ID) %>% 
+  summarize(Trip_CPUE = sum(Weight_kg) / mean(Effort_Hours)) %>% 
+summarize(Mean_CPUE_kg_hour = mean(Trip_CPUE))
+```
+
+Display a table of the mean CPUE data
+```{r, eval=TRUE}
+cpue_mean
+```
+
+Plot mean CPUE
+```{r, mean_CPUE, eval=TRUE}
+ggplot(cpue_mean,  aes(x=Year, y= Mean_CPUE_kg_hour)) + geom_line() +ylab("Mean CPUE")
+```
+
+Combine mean and median data
+```{r, eval=TRUE, message-FALSE}
+cpue <- merge(cpue_median, cpue_mean)
+
+cpue
+```
+
+Plot mean and median CPUE in one graph
+```{r, mean_median, eval=TRUE}
+
+ggplot(cpue,  aes(x=Year)) + geom_line(aes(y= Mean_CPUE_kg_hour, colour = "mean CPUE" )) + geom_line(aes(y= Median_CPUE_kg_hour, colour= "median CPUE")) +ylab("CPUE")
+```
+
