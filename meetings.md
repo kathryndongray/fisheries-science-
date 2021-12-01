@@ -17,3 +17,14 @@ that she can explain it well and provide links to the literature. The
 preliminary report will not be judged on the amount of content but on
 the clarity of the presentation.
 
+## 30/11/21
+
+Kathryn impresses me greatly by having digested almost all of Ken's book already
+(up to chapter 10), with detailed notes. She has spotted a mistake in the book
+and during our discussion we identify a second. I encourage her to get in touch
+with Ken about these mistakes.
+
+Most of Ken's book does not care about species identity, which is something we
+will be interested in when studying the diet. Kathryn will go on to the
+trait-based model discussed in chapter 11. We'll meet again in week 2 of spring
+term.
